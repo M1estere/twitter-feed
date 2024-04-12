@@ -23,3 +23,67 @@ body {
     margin: 0 auto;
     background-color: var(--main-white);
 }
+
+.header {
+    @apply h-[25px] bg-blue-500 w-full;
+}
+
+.h1-text {
+    @apply text-2xl text-[var(--main-black)] font-bold uppercase;
+}
+
+.grey-h2-text {
+    @apply text-xl text-[var(--main-grey)] font-normal;
+}
+
+#top {
+    @apply h-fit w-full mt-[25px];
+}
+
+.top-bar {
+    @apply w-[30%] h-fit mx-auto flex justify-between items-center;
+}
+
+#content > .wrapper {
+    @apply w-full h-fit relative pb-[75px];
+}
+
+#feed {
+    @apply w-[30%] h-fit mx-auto flex flex-col gap-y-[15px];
+}
+
+#new-post {
+    @apply w-full h-fit border-2 border-[var(--main-black)] rounded-[15px] p-[10px] flex flex-col gap-y-[10px] mb-[20px];
+}
+
+#new-post > .top-part {
+    @apply mt-[10px] w-full flex flex-row gap-x-[15px] items-center;
+}
+
+#new-post > .top-part > .personal-section {
+    @apply size-fit p-[10px] bg-[var(--main-grey)] rounded-full flex flex-row justify-center items-center;
+}
+
+.post-textarea {
+    @apply w-full focus:outline-none resize-none p-[5px] rounded-[10px] shadow-md;
+}
+
+.button {
+    @apply bg-blue-500 rounded-[10px] h-[35px] w-full text-lg text-[var(--main-white)] font-normal uppercase cursor-pointer;
+}
+
+.block-body {
+    @apply w-full bg-[var(--main-white)] border-2 border-[var(--main-black)] h-fit rounded-[15px] flex flex-col p-[10px] gap-y-[15px];
+}
+
+#comment-section {
+    @apply mt-[-2px] w-[85%] h-fit border-2 border-[var(--main-black)] rounded-b-[10px] mx-auto flex flex-col gap-y-[10px] p-[10px];
+}
+
+#user-block {
+    @apply w-full bg-[var(--main-white)] h-fit shadow-lg p-[10px] rounded-[10px] transition hover:-translate-x-[5px] hover:-translate-y-[5px] select-none;
+}
+
+#central-block {
+    @apply w-[350px] h-[500px] rounded-[15px] border-[1px] border-[var(--main-black)] shadow-lg px-[15px] py-[20px] flex flex-col gap-y-[30px];
+}

@@ -12,7 +12,7 @@
 
 <body>
     <?php
-        require './server/auth.php';
+        require './server/users_processing.php';
 
         $error = '';
 
@@ -20,6 +20,7 @@
             $type = $_POST['type'];
 
             if ($type == 'login') {
+                // обработка логина в систему
                 if (isset($_POST['user_nickname']) && isset($_POST['user_password'])) {
                     $response = login($_POST['user_nickname'], $_POST['user_password']);
                     if ($response == -2) {
@@ -38,6 +39,7 @@
                     }
                 }
             } else if ($type == 'reg') {
+                // обработка регистрации в систему
                 if (isset($_POST['user_nickname']) && isset($_POST['user_name']) && isset($_POST['user_password'])) {
                     $response = register($_POST['user_nickname'], $_POST['user_name'], $_POST['user_password']);
                     
@@ -71,7 +73,7 @@
                         echo "<span class='font-normal text-lg uppercase text-red-500'>{$error}</span>";
                     ?>
                 </div>
-                <div id="central-block" class="w-[350px] h-[500px] rounded-[15px] border-[1px] border-[var(--main-black)] shadow-lg px-[15px] py-[20px] flex flex-col gap-y-[30px]">
+                <div id="central-block">
                     <div class="flex flex-row justify-center items-center w-full h-fit gap-x-[20px]">
                         <span id="login-button" class='text-lg text-[var(--main-black)] font-bold uppercase border-[var(--main-black)] border-b-2 cursor-pointer'>Login</span>
                         <span id="reg-button" class='text-lg text-[var(--main-black)] font-bold uppercase border-[var(--main-black)] cursor-pointer'>Register</span>

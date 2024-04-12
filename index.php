@@ -15,8 +15,6 @@
         session_start();
         require './server/db_connection.php';
 
-        require './server/get_posts.php';
-
         if (isset($_SESSION['user']) == false) {
             header('Location:./auth.php');
             die;
@@ -24,10 +22,11 @@
     ?>
 
     <?php
-        require './server/add_post.php';
-        require './server/add_comment.php';
-        require './server/add_like.php';
+        require './server/posts_processing.php';
+        require './server/comments_processing.php';
+        require './server/likes_processing.php';
 
+        // функция для обработки нового поста
         function handle_new_post() {
             if (isset($_GET['content_text'])) {
                 $text = $_GET['content_text'];
@@ -43,6 +42,7 @@
             }
         }
 
+        // функция для обработки нового комментария
         function handle_new_comment() {
             if (isset($_GET['content-text']) && isset($_GET['post_id'])) {
                 $text = $_GET['content-text'];
@@ -59,6 +59,7 @@
             }
         }
 
+        // функция для обработки нового лайка
         function handle_new_like() {
             if (isset($_GET['post_id'])) {
                 $post_id = $_GET['post_id'];
@@ -91,14 +92,14 @@
         }
     ?>
 
-    <header id="header" class="h-[25px] bg-blue-500 w-full">
+    <header id="header" class="header">
     </header>
 
     <main>
-        <section id="top" class="h-fit w-full mt-[25px]">
-            <div class="w-[30%] h-fit mx-auto flex justify-between items-center">
-                <span class="text-2xl text-[var(--main-black)] font-bold uppercase">Welcome</span>
-                <span class="text-xl text-[var(--main-grey)] font-normal">
+        <section id="top">
+            <div class="top-bar">
+                <span class="h1-text">Welcome</span>
+                <span class="grey-h2-text">
                     <?php
                         require './server/sort.php';
 
@@ -110,13 +111,13 @@
         </section>
 
         <section id="content" class="mt-[25px]">
-            <div class="w-full h-fit relative pb-[75px]">
-                <div id="feed" class="w-[30%] h-fit mx-auto flex flex-col gap-y-[15px]">
-                    <div id="new-post" class="w-full h-fit border-2 border-[var(--main-black)] rounded-[15px] p-[10px] flex flex-col gap-y-[10px] mb-[20px]">
+            <div class="wrapper">
+                <div id="feed">
+                    <div id="new-post">
                         <span class='text-lg text-[var(--main-black)] font-bold uppercase'>What do you want to share today?</span>
                         
-                        <div class='mt-[10px] w-full flex flex-row gap-x-[15px] items-center'>
-                            <div class='size-fit p-[10px] bg-[var(--main-grey)] rounded-full flex flex-row justify-center items-center'>
+                        <div class='top-part'>
+                            <div class='personal-section'>
                                 <svg height='23px' width='23px' version='1.1' id='Capa_1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' viewBox='0 0 60.671 60.671' xml:space='preserve'>
                                     <g>
                                         <g>
@@ -141,29 +142,30 @@
                             <div class="size-full">
                                 <input type='text' name='type' value='add_post' hidden />
 
-                                <textarea class="w-full focus:outline-none resize-none p-[5px] rounded-[10px] shadow-md" rows="6" name="content_text" placeholder="Share something..." required></textarea>
+                                <textarea class="post-textarea" rows="6" name="content_text" placeholder="Share something..." required></textarea>
 
-                                <input class="bg-blue-500 rounded-[10px] h-[35px] w-full text-lg text-[var(--main-white)] font-normal uppercase cursor-pointer" type="submit" value="Create a post" />
+                                <input class="button" type="submit" value="Create a post" />
                             </div>
                         </form>
                     </div>
 
                     <?php
-                        require './server/get_comments.php';
-
                         foreach ($posts as $index => $post_info) {
                             $post_id = $post_info['post_id'];
 
+                            // htmlspecialchars для обеспечения защиты от XSS атак
                             $post_text = htmlspecialchars($post_info['text'], ENT_QUOTES, 'UTF-8');
                             $post_author_name = htmlspecialchars($post_info['nickname'], ENT_QUOTES, 'UTF-8');
                             $post_date = strtotime($post_info['date']);
                             $date_time = date('d M Y | H:i', $post_date);
-                                                
+                                   
+                            // обработка информации о комментариях
                             $post_comments = 0;
                             if (strlen($post_info['comments']) > 0) {
                                 $post_comments = sizeof(explode(',', $post_info['comments']));
                             }
 
+                            // обработка информации о лайках
                             $post_likes = 0;
                             if (strlen($post_info['likes']) > 0) {
                                 $post_likes = sizeof(explode(',', $post_info['likes']));
@@ -191,9 +193,10 @@
                                 ";
                             }
                             
+                            // создание блока поста пользователя
                             echo "
                                 <div id='block'>
-                                    <div id='content' class='w-full bg-[var(--main-white)] border-2 border-[var(--main-black)] h-fit rounded-[15px] flex flex-col p-[10px] gap-y-[15px]'>
+                                    <div id='content' class='block-body'>
                                         <div class='w-full flex flex-row gap-x-[15px] items-center'>
                                             <div class='size-fit p-[10px] bg-[var(--main-grey)] rounded-full flex flex-row justify-center items-center'>
                                                 <svg height='23px' width='23px' version='1.1' id='Capa_1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' viewBox='0 0 60.671 60.671' xml:space='preserve'>
@@ -250,11 +253,13 @@
 
                             $comments = get_comments(strval($post_info['comments']));
 
+                            // создание секции под комментарии
                             echo "
-                                <div id='comment-section' class='mt-[-2px] w-[85%] h-fit border-2 border-[var(--main-black)] rounded-b-[10px] mx-auto flex flex-col gap-y-[10px] p-[10px]'>
+                                <div id='comment-section'>
                                     <span class='text-lg text-[var(--main-black)] font-bold uppercase'>Comments</span>        
                             ";
 
+                            // создание блока под каждый комментарий
                             foreach ($comments as $index => $comment_info) {
                                 $comment_name = htmlspecialchars($comment_info['nickname'], ENT_QUOTES, 'UTF-8');
                                 $comment_text = htmlspecialchars($comment_info['text'], ENT_QUOTES, 'UTF-8');
@@ -288,6 +293,7 @@
                                 ";
                             }
 
+                            // создание формы под новый комментарий
                             echo "
                                 <div id='new-comment-block' class='h-fit mt-[10px] flex flex-col'>
                                     <span class='text-base text-[var(--main-black)] font-bold uppercase'>Add Comment</span>
@@ -335,9 +341,11 @@
 
                     <div class="w-full h-fit flex flex-col justify-start gap-y-[10px]">
                         <?php
-                            require './server/get_users.php'; 
+                            require './server/users_processing.php'; 
                             
                             $users = get_users();
+
+                            // получение пользователей и создание под каждого блока с информацией
                             foreach ($users as $index => $user_info) {
                                 $user_nickname = htmlspecialchars($user_info['nickname'], ENT_QUOTES, 'UTF-8');
                                 $user_name = $user_info['name'];
@@ -347,7 +355,7 @@
                                 $nickname_classes = $_SESSION['user']['nickname'] == $user_nickname ? "text-lg font-bold text-blue-500" : "text-lg font-bold text-[var(--main-black)]";
 
                                 echo "
-                                    <div id='user-block' class='w-full bg-[var(--main-white)] h-fit shadow-lg p-[10px] rounded-[10px] transition hover:-translate-x-[5px] hover:-translate-y-[5px] select-none'>
+                                    <div id='user-block'>
                                         <div class='w-full flex flex-row gap-x-[15px] items-center'>
                                             <div class='size-fit p-[10px] bg-[var(--main-grey)] rounded-full flex flex-row justify-center items-center'>
                                                 <svg height='23px' width='23px' version='1.1' id='Capa_1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' viewBox='0 0 60.671 60.671' xml:space='preserve'>
@@ -374,5 +382,8 @@
             </div>
         </section>
     </main>
+
+    <footer class="header">
+    </footer>
 </body>
 </html>
