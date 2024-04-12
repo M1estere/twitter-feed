@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+    --main-black: #1E1E1E;
+    --main-white: #FAFAFA;
+    --main-grey: #505050;
+}
+
+* {
+    box-sizing: border-box;
+    scroll-behavior: smooth;
+}
+  
+body {
+    overflow-x: hidden;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    position: relative;
+    z-index: 0;
+    max-width: 2100px;
+    margin: 0 auto;
+    background-color: var(--main-white);
+}
