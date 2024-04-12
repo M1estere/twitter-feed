@@ -11,7 +11,6 @@
 
         if ($stmt->execute()) {
             $comment_id = mysqli_insert_id($server_connection);
-            echo $comment_id;
             $stmt->close();
 
             $request = "SELECT * FROM posts WHERE post_id = '$post_id';";

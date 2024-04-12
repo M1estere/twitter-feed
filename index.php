@@ -31,7 +31,7 @@
             if (isset($_GET['content_text'])) {
                 $text = $_GET['content_text'];
 
-                $response = add_post($_SESSION['user']['id'], $text);
+                $response = add_post($_SESSION['user']['user_id'], $text);
                 if ($response == -1) {
                     echo 'Something went wrong (posts)';
                 } else if ($response == 0) {
@@ -47,7 +47,7 @@
                 $text = $_GET['content-text'];
                 $post_id = $_GET['post_id'];
 
-                $response = add_comment($_SESSION['user']['id'], $post_id, $text);
+                $response = add_comment($_SESSION['user']['user_id'], $post_id, $text);
                 if ($response == -1) {
                     echo 'Something went wrong (comments)';
                 } else if ($response == 0) {
@@ -80,7 +80,9 @@
                 <span class="text-2xl text-[var(--main-black)] font-bold uppercase">Welcome</span>
                 <span class="text-xl text-[var(--main-grey)] font-normal">
                     <?php
-                        $posts = get_posts();
+                        require './server/sort.php';
+
+                        $posts = sort_by_date(get_posts());
                         echo sizeof($posts).' feeds';
                     ?>
                 </span>
@@ -139,12 +141,12 @@
                                                 
                             $post_comments = 0;
                             if (strlen($post_info['comments']) > 0) {
-                                $post_comments = sizeof(explode($post_info['comments'], ','));
+                                $post_comments = sizeof(explode(',', $post_info['comments']));
                             }
 
                             $post_likes = 0;
                             if (strlen($post_info['likes']) > 0) {
-                                $post_likes = sizeof(explode($post_info['likes'], ','));
+                                $post_likes = sizeof(explode(',', $post_info['likes']));
                             }    
 
                             echo "

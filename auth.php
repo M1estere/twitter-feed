@@ -31,6 +31,7 @@
 
                         $_SESSION['user'] = user_exists($_POST['user_nickname']);
                         header('Location:./index.php');
+                        $_POST = array();
                         die;
                     } else {
                         $error = 'Some error occured';
@@ -49,6 +50,7 @@
 
                         $_SESSION['user'] = user_exists($_POST['user_nickname']);
                         header('Location:./index.php');
+                        $_POST = array();
                         die;
                     } else {
                         $error = 'Some error occured';

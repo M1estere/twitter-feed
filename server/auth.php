@@ -12,7 +12,7 @@
         if ($user == null) {
             return -2;
         } else {
-            if ($user['password'] == $password) {
+            if (password_verify($password, $user['password'])) {
                 return 0;
             } else {
                 return -1;
@@ -33,7 +33,7 @@
         } else {
             $date = date('Y-m-d', time());
             $stmt = $server_connection->prepare("INSERT INTO users (nickname, name, reg_date, password) VALUES (?, ?, '$date', ?);");
-            $stmt->bind_param('sss', $nickname, $name, $password);
+            $stmt->bind_param('sss', $nickname, $name, password_hash($password, PASSWORD_DEFAULT));
 
             if ($stmt->execute()) {
                 $stmt->close();
