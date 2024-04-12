@@ -1,5 +1,7 @@
 <?php
 
+    require './server/db_connection.php';
+
     function get_posts() {
         global $server_connection;
 
@@ -13,7 +15,7 @@
                 $result[] = $post;
             }
         }
-        
+
         return $result;
     }
 

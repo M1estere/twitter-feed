@@ -1,5 +1,7 @@
 <?php
 
+    require './server/db_connection.php';
+
     function get_users() {
         global $server_connection;
 
