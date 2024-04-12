@@ -1,12 +1,14 @@
 <?php
 
+    require './server/db_connection.php';
+
     function login($nickname, $password) {
         global $server_connection;
 
         $nickname = trim($nickname);
         $password = trim($password);
 
-        $user = userExists($nickname);
+        $user = user_exists($nickname);
         if ($user == null) {
             return -2;
         } else {
@@ -25,7 +27,7 @@
         $name = trim($name);
         $password = trim($password);
 
-        $user = userExists($nickname);
+        $user = user_exists($nickname);
         if ($user != null) {
             return -2;
         } else {
@@ -43,7 +45,7 @@
         }
     }
 
-    function userExists($nickname) {
+    function user_exists($nickname) {
         global $server_connection;
 
         $stmt = $server_connection->prepare('SELECT * FROM users WHERE nickname = ?;');

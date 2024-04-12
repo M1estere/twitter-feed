@@ -16,6 +16,13 @@
         require './server/db_connection.php';
 
         require './server/get_posts.php';
+
+        if (isset($_SESSION['user']) == false) {
+            header('Location:./auth.php');
+            die;
+        }
+
+        var_dump($_SESSION);
     ?>
 
     <header id="header" class="h-[25px] bg-blue-500 w-full">
@@ -54,7 +61,11 @@
                             </div>
 
                             <div class='flex flex-col h-full w-fit'>
-                                <span class='text-lg text-[var(--main-black)] font-bold'>m1estere</span>
+                                <span class='text-lg text-[var(--main-black)] font-bold'>
+                                    <?php
+                                        echo $_SESSION['user']['nickname'];
+                                    ?>
+                                </span>
                             </div>
                         </div>
 
@@ -205,7 +216,7 @@
                 
                                                 <div class='flex flex-col h-fit w-full'>
                                                     <div class='flex flex-row justify-start items-center'>
-                                                        <span class='text-lg text-[var(--main-black)] font-bold'>m1estere</span>
+                                                        <span class='text-lg text-[var(--main-black)] font-bold'>{$_SESSION['user']['nickname']}</span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -247,6 +258,8 @@
                                 $user_reg_date = strtotime($user_info['reg_date']);
                                 $date = date('d M Y', $user_reg_date);
 
+                                $nickname_classes = $_SESSION['user']['nickname'] == $user_nickname ? "text-lg font-bold text-blue-500" : "text-lg font-bold text-[var(--main-black)]";
+
                                 echo "
                                     <div id='user-block' class='w-full bg-[var(--main-white)] h-fit shadow-lg p-[10px] rounded-[10px] transition hover:-translate-x-[5px] hover:-translate-y-[5px] select-none'>
                                         <div class='w-full flex flex-row gap-x-[15px] items-center'>
@@ -262,7 +275,7 @@
                                             </div>
             
                                             <div class='flex flex-col h-full w-fit'>
-                                                <span class='text-lg text-[var(--main-black)] font-bold'>{$user_nickname}</span>
+                                                <span class='{$nickname_classes}'>{$user_nickname}</span>
                                                 <span class='text-base text-[var(--main-grey)] font-normal'>Reg Date: {$date}</span>
                                             </div>
                                         </div>

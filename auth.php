@@ -12,41 +12,44 @@
 
 <body>
     <?php
-        session_start();
-        require './server/db_connection.php';
-    ?>
-
-    <?php
         require './server/auth.php';
 
         $error = '';
 
-        if (isset($_GET['type'])) {
-            $type = $_GET['type'];
+        if (isset($_POST['type'])) {
+            $type = $_POST['type'];
 
             if ($type == 'login') {
-                if (isset($_GET['user_nickname']) && isset($_GET['user_password'])) {
-                    $response = login($_GET['user_nickname'], $_GET['user_password']);
+                if (isset($_POST['user_nickname']) && isset($_POST['user_password'])) {
+                    $response = login($_POST['user_nickname'], $_POST['user_password']);
                     if ($response == -2) {
                         $error = 'User does not exist!';
                     } else if ($response == -1) {
                         $error = 'Wrond password';
                     } else if ($response == 0) {
-                        // header('Location:./index.php');
+                        session_start();
+
+                        $_SESSION['user'] = user_exists($_POST['user_nickname']);
+                        header('Location:./index.php');
+                        die;
                     } else {
                         $error = 'Some error occured';
                     }
                 }
             } else if ($type == 'reg') {
-                if (isset($_GET['user_nickname']) && isset($_GET['user_name']) && isset($_GET['user_password'])) {
-                    $response = register($_GET['user_nickname'], $_GET['user_name'], $_GET['user_password']);
+                if (isset($_POST['user_nickname']) && isset($_POST['user_name']) && isset($_POST['user_password'])) {
+                    $response = register($_POST['user_nickname'], $_POST['user_name'], $_POST['user_password']);
                     
                     if ($response == -2) {
                         $error = 'User already exists';
                     } else if ($response == -1) {
                         $error = 'Error adding a new user';
                     } else if ($response == 0) {
-                        // header('Location:./index.php');
+                        session_start();
+
+                        $_SESSION['user'] = user_exists($_POST['user_nickname']);
+                        header('Location:./index.php');
+                        die;
                     } else {
                         $error = 'Some error occured';
                     }
@@ -73,7 +76,7 @@
                     </div>
 
                     <div id="login-form" class="size-full visible">
-                        <form method="get" action="#" class="size-full flex flex-col justify-start items-center gap-y-[5px]">
+                        <form method="post" action="#" class="size-full flex flex-col justify-start items-center gap-y-[5px]">
                             <input type='text' name='type' value='login' hidden />
 
                             <input type='text' name='user_nickname' placeholder="Enter your nickname..." class="w-full h-[50px] p-[5px] font-normal text-lg rounded-[10px] focus:outline-none" required />
@@ -84,7 +87,7 @@
                     </div>
 
                     <div id="reg-form" class="size-full hidden">
-                        <form method="get" action="#" class="size-full flex flex-col justify-start items-center gap-y-[5px]">
+                        <form method="post" action="#" class="size-full flex flex-col justify-start items-center gap-y-[5px]">
                             <input type='text' name='type' value='reg' hidden />
                         
                             <input type='text' name='user_nickname' placeholder="Enter your nickname..." class="w-full h-[50px] p-[5px] font-normal text-lg rounded-[10px] focus:outline-none" required />
