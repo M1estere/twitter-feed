@@ -7,7 +7,7 @@
 
         $result = array();
 
-        $request = 'SELECT * FROM posts JOIN users ON posts.user_id = users.id;';
+        $request = 'SELECT * FROM posts JOIN users ON posts.user_id = users.user_id;';
         $query = mysqli_query($server_connection, $request);
 
         if ($query) {

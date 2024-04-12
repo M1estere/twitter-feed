@@ -9,7 +9,7 @@
 
         $result = array();
 
-        $request = "SELECT * FROM comments JOIN users ON comments.user_id = users.id WHERE comments.id IN ({$id_string});";
+        $request = "SELECT * FROM comments JOIN users ON comments.user_id = users.user_id WHERE comments.comment_id IN ({$id_string});";
         $query = mysqli_query($server_connection, $request);
 
         if ($query) {

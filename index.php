@@ -21,12 +21,11 @@
             header('Location:./auth.php');
             die;
         }
-
-        var_dump($_SESSION);
     ?>
 
     <?php
         require './server/add_post.php';
+        require './server/add_comment.php';
 
         function handle_new_post() {
             if (isset($_GET['content_text'])) {
@@ -42,6 +41,22 @@
                 }
             }
         }
+
+        function handle_new_comment() {
+            if (isset($_GET['content-text']) && isset($_GET['post_id'])) {
+                $text = $_GET['content-text'];
+                $post_id = $_GET['post_id'];
+
+                $response = add_comment($_SESSION['user']['id'], $post_id, $text);
+                if ($response == -1) {
+                    echo 'Something went wrong (comments)';
+                } else if ($response == 0) {
+                    echo 'Comment added!';
+                } else {
+                    echo 'Some error occured';
+                }
+            }
+        }
     ?>
 
     <?php
@@ -50,6 +65,8 @@
 
             if ($type == 'add_post') {
                 handle_new_post();
+            } else if ($type == 'add_comment') {
+                handle_new_comment();
             }
         }
     ?>
@@ -113,6 +130,8 @@
                         require './server/get_comments.php';
 
                         foreach ($posts as $index => $post_info) {
+                            $post_id = $post_info['post_id'];
+
                             $post_text = $post_info['text'];
                             $post_author_name = $post_info['nickname'];
                             $post_date = strtotime($post_info['date']);
@@ -120,12 +139,12 @@
                                                 
                             $post_comments = 0;
                             if (strlen($post_info['comments']) > 0) {
-                                $post_comments = sizeof(explode($post_info['comments'], ' '));
+                                $post_comments = sizeof(explode($post_info['comments'], ','));
                             }
 
                             $post_likes = 0;
                             if (strlen($post_info['likes']) > 0) {
-                                $post_likes = sizeof(explode($post_info['likes'], ' '));
+                                $post_likes = sizeof(explode($post_info['likes'], ','));
                             }    
 
                             echo "
@@ -259,7 +278,8 @@
 
                                     <form method='get' action='#' class='w-full h-fit mt-[10px]'>
                                         <div class='size-full'>
-                                            <input type='text' name='type' value='add_post' hidden />
+                                            <input type='text' name='post_id' value='{$post_id}' hidden />
+                                            <input type='text' name='type' value='add_comment' hidden />
             
                                             <textarea class='w-full focus:outline-none resize-none p-[5px] rounded-[10px] shadow-md' rows='3' name='content-text' placeholder='Expose your feelings...' required></textarea>
             
