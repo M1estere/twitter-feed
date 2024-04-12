@@ -25,6 +25,35 @@
         var_dump($_SESSION);
     ?>
 
+    <?php
+        require './server/add_post.php';
+
+        function handle_new_post() {
+            if (isset($_GET['content_text'])) {
+                $text = $_GET['content_text'];
+
+                $response = add_post($_SESSION['user']['id'], $text);
+                if ($response == -1) {
+                    echo 'Something went wrong (posts)';
+                } else if ($response == 0) {
+                    echo 'Post added!';
+                } else {
+                    echo 'Some error occured';
+                }
+            }
+        }
+    ?>
+
+    <?php
+        if (isset($_GET['type'])) {
+            $type = $_GET['type'];
+
+            if ($type == 'add_post') {
+                handle_new_post();
+            }
+        }
+    ?>
+
     <header id="header" class="h-[25px] bg-blue-500 w-full">
     </header>
 
@@ -73,7 +102,7 @@
                             <div class="size-full">
                                 <input type='text' name='type' value='add_post' hidden />
 
-                                <textarea class="w-full focus:outline-none resize-none p-[5px] rounded-[10px] shadow-md" rows="6" name="content-text" placeholder="Share something..." required></textarea>
+                                <textarea class="w-full focus:outline-none resize-none p-[5px] rounded-[10px] shadow-md" rows="6" name="content_text" placeholder="Share something..." required></textarea>
 
                                 <input class="bg-blue-500 rounded-[10px] h-[35px] w-full text-lg text-[var(--main-white)] font-normal uppercase cursor-pointer" type="submit" value="Create a post" />
                             </div>
@@ -88,8 +117,16 @@
                             $post_author_name = $post_info['nickname'];
                             $post_date = strtotime($post_info['date']);
                             $date_time = date('d M Y | H:i', $post_date);
-                            $post_likes = sizeof(explode($post_info['likes'], ' '));
-                            $post_comments = sizeof(explode($post_info['comments'], ' '));
+                                                
+                            $post_comments = 0;
+                            if (strlen($post_info['comments']) > 0) {
+                                $post_comments = sizeof(explode($post_info['comments'], ' '));
+                            }
+
+                            $post_likes = 0;
+                            if (strlen($post_info['likes']) > 0) {
+                                $post_likes = sizeof(explode($post_info['likes'], ' '));
+                            }    
 
                             echo "
                                 <div id='block'>
@@ -158,13 +195,12 @@
 
                             $comments = get_comments(strval($post_info['comments']));
 
+                            echo "
+                                <div id='comment-section' class='mt-[-2px] w-[85%] h-fit border-2 border-[var(--main-black)] rounded-b-[10px] mx-auto flex flex-col gap-y-[10px] p-[10px]'>
+                                    <span class='text-lg text-[var(--main-black)] font-bold uppercase'>Comments</span>        
+                            ";
+
                             foreach ($comments as $index => $comment_info) {
-                                if ($index == 0) {
-                                    echo "
-                                        <div id='comment-section' class='mt-[-2px] w-[85%] h-fit border-2 border-[var(--main-black)] rounded-b-[10px] mx-auto flex flex-col gap-y-[10px] p-[10px]'>
-                                            <span class='text-lg text-[var(--main-black)] font-bold uppercase'>Comments</span>        
-                                    ";
-                                }
                                 $comment_name = $comment_info['nickname'];
                                 $comment_text = $comment_info['text'];
                                 $comment_add_date = strtotime($comment_info['add_date']);
@@ -195,50 +231,44 @@
                                         </div>
                                     </div>
                                 ";
-
-                                if ($index == sizeof($comments) - 1) {
-                                    echo "
-                                        <div id='new-comment-block' class='h-fit mt-[10px] flex flex-col'>
-                                            <span class='text-base text-[var(--main-black)] font-bold uppercase'>Add Comment</span>
-
-                                            <div class='w-full flex flex-row gap-x-[15px] items-start'>
-                                                <div class='mt-[5px] size-fit p-[10px] bg-[var(--main-grey)] rounded-full flex flex-row justify-center items-center'>
-                                                    <svg height='23px' width='23px' version='1.1' id='Capa_1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' viewBox='0 0 60.671 60.671' xml:space='preserve'>
-                                                        <g>
-                                                            <g>
-                                                                <ellipse style='fill:#FAFAFA;' cx='30.336' cy='12.097' rx='11.997' ry='12.097'/>
-                                                                <path style='fill:#FAFAFA;' d='M35.64,30.079H25.031c-7.021,0-12.714,5.739-12.714,12.821v17.771h36.037V42.9
-                                                                    C48.354,35.818,42.661,30.079,35.64,30.079z'/>
-                                                            </g>
-                                                        </g>
-                                                    </svg>
-                                                </div>
-                
-                                                <div class='flex flex-col h-fit w-full'>
-                                                    <div class='flex flex-row justify-start items-center'>
-                                                        <span class='text-lg text-[var(--main-black)] font-bold'>{$_SESSION['user']['nickname']}</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <form method='get' action='#' class='w-full h-fit mt-[10px]'>
-                                                <div class='size-full'>
-                                                    <input type='text' name='type' value='add_post' hidden />
-                    
-                                                    <textarea class='w-full focus:outline-none resize-none p-[5px] rounded-[10px] shadow-md' rows='3' name='content-text' placeholder='Expose your feelings...' required></textarea>
-                    
-                                                    <input class='bg-blue-500 rounded-[10px] h-[35px] w-full text-lg text-[var(--main-white)] font-normal uppercase cursor-pointer' type='submit' value='Place a comment' />
-                                                </div>
-                                            </form>
-                                        </div>
-                                    ";
-                                }
-
-                                if ($index == 0) {
-                                    echo "</div>";
-                                }
                             }
 
+                            echo "
+                                <div id='new-comment-block' class='h-fit mt-[10px] flex flex-col'>
+                                    <span class='text-base text-[var(--main-black)] font-bold uppercase'>Add Comment</span>
+
+                                    <div class='w-full flex flex-row gap-x-[15px] items-start'>
+                                        <div class='mt-[5px] size-fit p-[10px] bg-[var(--main-grey)] rounded-full flex flex-row justify-center items-center'>
+                                            <svg height='23px' width='23px' version='1.1' id='Capa_1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' viewBox='0 0 60.671 60.671' xml:space='preserve'>
+                                                <g>
+                                                    <g>
+                                                        <ellipse style='fill:#FAFAFA;' cx='30.336' cy='12.097' rx='11.997' ry='12.097'/>
+                                                        <path style='fill:#FAFAFA;' d='M35.64,30.079H25.031c-7.021,0-12.714,5.739-12.714,12.821v17.771h36.037V42.9
+                                                            C48.354,35.818,42.661,30.079,35.64,30.079z'/>
+                                                    </g>
+                                                </g>
+                                            </svg>
+                                        </div>
+        
+                                        <div class='flex flex-col h-fit w-full'>
+                                            <div class='flex flex-row justify-start items-center'>
+                                                <span class='text-lg text-[var(--main-black)] font-bold'>{$_SESSION['user']['nickname']}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <form method='get' action='#' class='w-full h-fit mt-[10px]'>
+                                        <div class='size-full'>
+                                            <input type='text' name='type' value='add_post' hidden />
+            
+                                            <textarea class='w-full focus:outline-none resize-none p-[5px] rounded-[10px] shadow-md' rows='3' name='content-text' placeholder='Expose your feelings...' required></textarea>
+            
+                                            <input class='bg-blue-500 rounded-[10px] h-[35px] w-full text-lg text-[var(--main-white)] font-normal uppercase cursor-pointer' type='submit' value='Place a comment' />
+                                        </div>
+                                    </form>
+                                </div>
+                            ";
+                            echo "</div>";
                             echo "</div>";
                         }
                     ?>
